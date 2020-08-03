@@ -11,19 +11,30 @@ class NeuralNetwork:
 
         # init weight matrices with random values from bell curve at first.
         # dividing the value we init the weights with to stay contained no matter the input.
-        self.weights = [np.random.standard_normal(shape) / shape[1]**.5 for shape in weight_shapes]
+        self.weights = [np.random.standard_normal(shape) / shape[1] ** .5 for shape in weight_shapes]
 
         # init biases with zeroes; column vector for each layer except the input
         self.biases = [np.zeros((shape, 1)) for shape in layer_sizes[1::]]
 
     def predict(self, input_vector):
-        # with a starting as the inputs, iterate through all layers in the network,
+        # with a starting the inputs, iterate through all layers in the network,
         # updating the activation at each step, finally giving us our output.
         activation = input_vector
         for weight, bias in zip(self.weights, self.biases):
             activation = self.activation(np.matmul(weight, activation) + bias)
 
         return activation
+
+    def print_accuracy(self, images, labels):
+        predictions = self.predict(images)
+
+        # use list comprehension to generate array of 1's for correct prediction, 0 otherwise.
+        number_correct = np.sum([np.argmax(a) == np.argmax(b) for a, b in zip(predictions, labels)])
+        print('correct predictions: {0}/{1}; accuracy: {2}%'.format(
+            number_correct,
+            len(images),
+            (number_correct/len(images))*100
+        ))
 
     @staticmethod
     def activation(x):
